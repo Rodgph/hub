@@ -1,0 +1,190 @@
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-base);
+    color: var(--color-title);
+    overflow: hidden;
+}
+
+.splitPane {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.splitPane.vertical {
+    flex-direction: row;
+}
+
+.splitPane.horizontal {
+    flex-direction: column;
+}
+
+.resizeHandle {
+    background-color: #333;
+    z-index: 10;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.resizeHandle:hover {
+    background-color: #555;
+}
+
+.resizeHandle.vertical {
+    width: 4px;
+    cursor: col-resize;
+}
+
+.resizeHandle.horizontal {
+    height: 4px;
+    cursor: row-resize;
+}
+
+.emptyPane {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--color-subtitle);
+    user-select: none;
+}
+
+.moduleContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-module);
+    border-radius: var(--radius-module);
+}
+
+.dragHandle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px; /* Área de ativação minimalista */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    background: transparent;
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: grab;
+    z-index: 100;
+}
+
+.dragHandle:hover {
+    height: 32px; /* Expande para mostrar os controles */
+    opacity: 1;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+}
+
+.dragInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tabDots {
+    display: flex;
+    gap: 4px;
+}
+
+.dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.dotActive {
+    background: var(--color-title);
+    box-shadow: 0 0 8px var(--color-title);
+}
+
+.dragIcon {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+}
+
+.dragOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    background: transparent;
+    pointer-events: all;
+}
+
+.dragOverlay.active {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dropIndicator {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    transition: all 0.15s var(--ease-out);
+}
+
+.dropIndicator.center { top: 10%; left: 10%; right: 10%; bottom: 10%; background: rgba(255, 255, 255, 0.15); }
+.dropIndicator.top { top: 0; left: 0; right: 0; height: 50%; }
+.dropIndicator.bottom { bottom: 0; left: 0; right: 0; height: 50%; }
+.dropIndicator.left { top: 0; left: 0; bottom: 0; width: 50%; }
+.dropIndicator.right { top: 0; right: 0; bottom: 0; width: 50%; }
+
+.moduleContent {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.moduleContent.isDragging {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #444;
+    background: #222;
+    color: #888;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.tabContainer {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-module);
+    border-radius: var(--radius-module);
+    overflow: hidden;
+}
+
+.tabContent {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}

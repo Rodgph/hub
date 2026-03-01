@@ -1,0 +1,33 @@
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dependências
+node_modules
+/dist
+/dist-tauri
+
+# Rust/Tauri Build
+src-tauri/target
+src-tauri/Cargo.lock
+
+# Variáveis de Ambiente
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# SvelteKit/Vite
+.svelte-kit
+.vercel

@@ -1,0 +1,21 @@
+:root[data-theme="dark"] {
+  --bg-base: #000000;
+  --bg-module: #020202;
+  --bg-module-rgb: 2, 2, 2;
+  --color-title: #FFFFFF;
+  --color-subtitle: #7A7A7A;
+  --status-online: #00FF66;
+  --status-away: #FF7F50;
+  --status-dnd: #C7001B;
+  --status-offline: #7A7A7A;
+  --radius-module: 20px;
+  --radius-interactive: 100px;
+  --duration-instant: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-skeleton: 1500ms;
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0.0, 1.0, 1);
+  --ease-inout: cubic-bezier(0.4, 0.0, 0.2, 1);
+}

@@ -1,0 +1,13 @@
+{
+  "search": {
+    "placeholder": "Buscar personas, mensajes, música...",
+    "navigate": "navegar",
+    "open": "abrir",
+    "close": "cerrar"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal. Inténtalo de nuevo.",
+    "retry": "Intentar de nuevo"
+  }
+}
