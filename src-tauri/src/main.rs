@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder, Listener};
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 use window_vibrancy::{apply_acrylic, apply_mica};
 
@@ -44,6 +44,13 @@ fn main() {
         }).build())
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
+            let handle = app.handle().clone();
+            app.listen("deep-link://new-url", move |event| {
+                if let Some(main_win) = handle.get_webview_window("main") {
+                    let _ = main_win.emit("deep-link", event.payload());
+                }
+            });
+
             // Garante que a janela principal esteja TOTALMENTE oculta no boot
             if let Some(main_window) = app.get_webview_window("main") {
                 let _ = main_window.hide();

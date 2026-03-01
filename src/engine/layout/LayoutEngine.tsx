@@ -8,32 +8,38 @@ import { ModuleWrapper } from './ModuleWrapper';
 import { TabPane } from './TabPane';
 import styles from './layout.module.css';
 
+import { ModuleRegistry } from '@/modules';
 
 export function LayoutEngine() {
   const tree = useLayoutStore(state => state.tree);
 
   const renderNode = (node: LayoutNode): React.ReactNode => {
     if (node.type === 'split') {
-      return <SplitPane node={node} renderNode={renderNode} />;
+      return <SplitPane key={node.id} node={node} renderNode={renderNode} />;
     }
 
     if (node.type === 'tabs') {
-      return <TabPane node={node} renderNode={renderNode} />;
+      return <TabPane key={node.id} node={node} renderNode={renderNode} />;
     }
     
-    // All module nodes (empty or not) are wrapped in ModuleWrapper
-    // This provides context menu, drag and drop, and standard container styles
+    // Procura o componente real no registro
+    const RealComponent = ModuleRegistry[node.moduleId];
+
     return (
         <ModuleWrapper 
+          key={node.id}
           nodeId={node.id} 
           moduleId={node.moduleId}
           hideHandle={node.moduleId === ModuleId.Empty}
         >
             {node.moduleId === ModuleId.Empty ? (
                 <EmptyPane nodeId={node.id} />
+            ) : RealComponent ? (
+                <RealComponent />
             ) : (
-                /* In future phases, we will map moduleId to actual components */
-                null
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555' }}>
+                    {node.moduleId.toUpperCase()} (EM DESENVOLVIMENTO)
+                </div>
             )}
         </ModuleWrapper>
     );

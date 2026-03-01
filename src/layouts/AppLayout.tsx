@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { LayoutEngine } from '@/engine/layout/LayoutEngine';
-import { BottomBar } from './BottomBar/BottomBar';
 import { ContextMenu } from '@/components/shared/ContextMenu/ContextMenu';
 import { useLayoutStore } from '@/store/layout.store';
 import { useAuthStore } from '@/store/auth.store';
@@ -22,6 +21,43 @@ export function AppLayout() {
     }
   }, [user?.id]);
 
+  useEffect(() => {
+    let unlisten: (() => void) | null = null;
+
+    const setup = async () => {
+      const { listen } = await import('@tauri-apps/api/event');
+      const { findFirstEmptyNode, getLeafNodes } = await import('@/utils/layout-tree');
+
+      unlisten = await listen('layout:insert-module', (event: any) => {
+        const { moduleId } = event.payload;
+        const layout = useLayoutStore.getState();
+
+        // 1. Verifica se o módulo já está aberto em algum lugar
+        const leafNodes = getLeafNodes(layout.tree);
+        const existingNode = leafNodes.find(node => node.moduleId === moduleId);
+
+        if (existingNode) {
+          // Se já existe, apenas foca nele e não cria outro
+          layout.setActiveNode(existingNode.id);
+          return;
+        }
+
+        // 2. Se for novo, tenta preencher vazio ou criar split
+        const emptyNodeId = findFirstEmptyNode(layout.tree);
+
+        if (emptyNodeId) {
+          layout.insertNode(emptyNodeId, moduleId, 'center');
+        } else {
+          const targetId = layout.activeNodeId || (leafNodes.length > 0 ? leafNodes[0].id : 'root');
+          layout.insertNode(targetId, moduleId, 'right');
+        }
+      });
+    };
+
+    setup();
+    return () => { if (unlisten) unlisten(); };
+  }, []);
+
   return (
     <div
       style={{
@@ -37,7 +73,6 @@ export function AppLayout() {
       <main style={{ flex: 1, overflow: 'hidden' }}>
         <LayoutEngine />
       </main>
-      <BottomBar />
       <ContextMenu />
     </div>
   )

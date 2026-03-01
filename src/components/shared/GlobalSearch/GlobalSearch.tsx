@@ -1,60 +1,79 @@
-import { RefObject, useState } from 'react'
-import { getCurrentWindow } from '@tauri-apps/api/window'
-import styles from './GlobalSearch.module.css'
+import React, { useEffect } from 'react';
+import { useSearchStore } from '@/store/search.store';
+import styles from './GlobalSearch.module.css';
 
 interface GlobalSearchProps {
-  inputRef: RefObject<HTMLInputElement>
+  inputRef: React.RefObject<HTMLInputElement>;
 }
 
 export function GlobalSearch({ inputRef }: GlobalSearchProps) {
-  const [query, setQuery] = useState('')
+  const { query, setQuery, results, selectedIndex, setSelectedIndex, executeSelected, isLoading } = useSearchStore();
 
-  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setQuery('')
-      try {
-        await getCurrentWindow().hide()
-      } catch {
-        // fora do Tauri (browser dev) — ignorar
-      }
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (results.length === 0) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((selectedIndex + 1) % results.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((selectedIndex - 1 + results.length) % results.length);
+    } else if (e.key === 'Enter') {
+      executeSelected();
+    } else if (e.key === 'Escape') {
+      import('@tauri-apps/api/webviewWindow').then(m => m.getCurrentWebviewWindow().hide());
     }
-  }
+  };
+
+  useEffect(() => {
+    setQuery('');
+  }, [setQuery]);
 
   return (
     <div className={styles.container}>
-      <div className={styles.inputWrapper}>
-        <span className={styles.icon}>⌕</span>
+      <div className={styles.searchBox}>
+        <span className={styles.searchIcon}>{isLoading ? '⏳' : '🔍'}</span>
         <input
           ref={inputRef}
-          className={styles.input}
           type="text"
-          placeholder="Buscar pessoas, mensagens, músicas..."
+          className={styles.input}
+          placeholder="Pesquisar..."
           value={query}
-          onChange={e => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          autoComplete="off"
-          spellCheck={false}
+          autoFocus
         />
-        {query && (
-          <button className={styles.clear} onClick={() => setQuery('')}>
-            ✕
-          </button>
-        )}
       </div>
 
-      {query.length > 0 && (
-        <div className={styles.results}>
-          <p className={styles.resultsPlaceholder}>
-            Buscando por "{query}"…
-          </p>
+      {results.length > 0 && (
+        <div className={styles.resultsList}>
+          {results.map((result, index) => (
+            <div
+              key={result.id}
+              className={`${styles.resultItem} ${index === selectedIndex ? styles.selected : ''}`}
+              onClick={() => {
+                setSelectedIndex(index);
+                executeSelected();
+              }}
+            >
+              <span className={styles.resultIcon}>{result.icon}</span>
+              <div className={styles.resultContent}>
+                <span className={styles.resultTitle}>{result.title}</span>
+                <span className={styles.resultDescription}>{result.description}</span>
+              </div>
+              <span className={styles.categoryBadge}>{result.category}</span>
+              {index === selectedIndex && <span className={styles.enterHint}>↵</span>}
+            </div>
+          ))}
         </div>
       )}
 
-      <div className={styles.hints}>
-        <span><kbd>↑↓</kbd> navegar</span>
-        <span><kbd>Enter</kbd> abrir</span>
-        <span><kbd>Esc</kbd> fechar</span>
+      <div className={styles.footer}>
+        <div className={styles.shortcuts}>
+          <span><kbd>↑↓</kbd> Navegar</span>
+          <span><kbd>↵</kbd> Selecionar</span>
+          <span><kbd>ESC</kbd> Fechar</span>
+        </div>
       </div>
     </div>
-  )
+  );
 }

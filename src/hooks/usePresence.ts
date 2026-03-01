@@ -17,7 +17,7 @@ export function usePresence() {
         .upsert({ 
           user_id: user.id, 
           status, 
-          last_seen: new Date().toISOString() 
+          last_seen_at: new Date().toISOString() 
         });
     };
 

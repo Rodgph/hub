@@ -20,10 +20,13 @@ interface ModuleWrapperProps {
  * Fornece funcionalidades comuns como menu de contexto e gerenciamento de estado.
  */
 export function ModuleWrapper({ nodeId, moduleId, children, hideHandle }: ModuleWrapperProps) {
-  const { insertNode, removeNode, draggedNodeId } = useLayoutStore();
+  const { insertNode, removeNode, draggedNodeId, activeNodeId, setActiveNode } = useLayoutStore();
   const { openContextMenu } = useContextMenu();
 
+  const isActive = activeNodeId === nodeId;
+
   const handleContextMenu = (e: React.MouseEvent) => {
+    setActiveNode(nodeId); // Ativa o nó ao clicar com o botão direito também
     const menuItems: MenuItem[] = [
       { id: 'change-module', label: 'Mudar Módulo...', action: () => {}, icon: '🔄' }, 
       { id: 'clear-module', label: 'Limpar Módulo', action: () => insertNode(nodeId, ModuleId.Empty, 'center'), icon: '🧹' },
@@ -47,7 +50,11 @@ export function ModuleWrapper({ nodeId, moduleId, children, hideHandle }: Module
   };
 
   return (
-    <div className={styles.moduleContainer} onContextMenu={handleContextMenu}>
+    <div 
+      className={`${styles.moduleContainer} ${isActive ? styles.active : ''}`} 
+      onContextMenu={handleContextMenu}
+      onClick={() => setActiveNode(nodeId)}
+    >
       {!hideHandle && <DragHandle nodeId={nodeId} />}
       
       <div className={`${styles.moduleContent} ${draggedNodeId ? styles.isDragging : ''}`}>
