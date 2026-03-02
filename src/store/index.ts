@@ -5,3 +5,7 @@ export * from './events.store';
 export * from './offline.store';
 export * from './hardware.store';
 export * from './chat.store';
+export * from './modules/feed.store';
+export * from './modules/music.store';
+export * from './modules/games.store';
+export * from './modules/live.store';

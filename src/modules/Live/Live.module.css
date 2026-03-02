@@ -1,0 +1,86 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-base, #000000);
+}
+
+.header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.streamCard {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.streamCard:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.streamInfo {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.streamTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.streamUser {
+  font-size: 0.8rem;
+  color: var(--color-subtitle, #7a7a7a);
+}
+
+.activeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.backBtn {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--color-subtitle, #7a7a7a);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.backBtn:hover {
+  color: var(--color-title, #fff);
+}

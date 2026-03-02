@@ -14,12 +14,30 @@
     background: #222;
     z-index: 2;
     border: 2px solid var(--bg-module);
+    position: relative;
 }
 
 .avatarImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    position: relative;
+    z-index: 1;
+}
+
+.avatarContainer.edit {
+    border-radius: 20px;
+}
+
+.edit .imageWrapper {
+    border-radius: 20px;
+}
+
+.edit .statusIndicator {
+    bottom: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
 }
 
 .avatarPlaceholder {
@@ -28,8 +46,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 80px;
     background: #333;
+    border-radius: 20px;
 }
 
 .statusIndicator {
@@ -47,6 +66,18 @@
 .statusIndicator.away { background: var(--status-away); }
 .statusIndicator.dnd { background: var(--status-dnd); }
 .statusIndicator.offline { background: var(--status-offline); }
+
+.standaloneStatus {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.standaloneStatus.online { background: var(--status-online); box-shadow: 0 0 8px var(--status-online); }
+.standaloneStatus.away { background: var(--status-away); }
+.standaloneStatus.dnd { background: var(--status-dnd); }
+.standaloneStatus.offline { background: var(--status-offline); }
 
 .storyRing {
     position: absolute;
@@ -81,7 +112,7 @@
 
 .bannerContainer.card { height: 60px; }
 .bannerContainer.chat { height: 120px; }
-.bannerContainer.profile { height: 200px; }
+.bannerContainer.profile { height: 100%; position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
 
 .bannerMedia {
     width: 100%;
@@ -96,4 +127,139 @@
     right: 0;
     bottom: 0;
     background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
+}
+
+.editableText {
+    transition: opacity 0.2s ease;
+}
+
+.editableText:hover {
+    opacity: 0.7;
+}
+
+.bannerEditOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 15;
+}
+
+.bannerEditOverlay:hover {
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 1;
+}
+
+.bannerDropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 240px;
+    background: rgba(20, 20, 20, 0.98);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.dropdownHeader {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--color-subtitle);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.importBtn {
+    width: 100%;
+    background: var(--color-title);
+    color: var(--bg-base);
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.importBtn:hover {
+    transform: scale(1.02);
+    background: #fff;
+}
+
+.typeGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.typeGrid button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.typeGrid button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-title);
+}
+
+.urlInputArea {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.urlInputArea input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #fff;
+    font-size: 12px;
+    outline: none;
+}
+
+.urlInputArea button {
+    background: var(--color-title);
+    color: var(--bg-base);
+    border: none;
+    padding: 0 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.05);
+    margin: 8px 0;
 }

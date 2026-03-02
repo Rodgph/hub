@@ -1,0 +1,79 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.container:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-4px);
+}
+
+.container.active {
+  background: rgba(0, 255, 102, 0.05);
+  border-color: #00ff66;
+}
+
+.coverWrapper {
+  position: relative;
+  aspect-ratio: 3/4;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.activeOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.statusBadge {
+  background: #00ff66;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+.cpuUsage {
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0.25rem;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-title, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playtime {
+  font-size: 0.75rem;
+  color: var(--color-subtitle, #7a7a7a);
+}

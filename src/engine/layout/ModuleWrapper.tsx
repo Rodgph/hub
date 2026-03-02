@@ -54,10 +54,15 @@ export function ModuleWrapper({ nodeId, moduleId, children, hideHandle }: Module
       className={`${styles.moduleContainer} ${isActive ? styles.active : ''}`} 
       onContextMenu={handleContextMenu}
       onClick={() => setActiveNode(nodeId)}
+      data-module-id={moduleId}
     >
       {!hideHandle && <DragHandle nodeId={nodeId} />}
       
-      <div className={`${styles.moduleContent} ${draggedNodeId ? styles.isDragging : ''}`}>
+      <div className={`
+        ${styles.moduleContent} 
+        ${draggedNodeId ? styles.isDragging : ''} 
+        ${moduleId === ModuleId.Nav ? styles.navContent : ''}
+      `}>
         {children || (
           <div className={styles.placeholder}>
             {moduleId}
@@ -65,7 +70,7 @@ export function ModuleWrapper({ nodeId, moduleId, children, hideHandle }: Module
         )}
       </div>
 
-      <DragOverlay nodeId={nodeId} />
+      <DragOverlay nodeId={nodeId} moduleId={moduleId} />
     </div>
   );
 }

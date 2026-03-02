@@ -1,17 +1,31 @@
 import { create } from 'zustand';
 
+export interface DiskStats {
+  name: string;
+  mount_point: string;
+  total_space: number;
+  available_space: number;
+  usage_percent: number;
+}
+
 interface HardwareState {
   cpuUsage: number;
   gpuUsage: number;
-  ramUsage: number;
+  ramUsagePercent: number;
+  ramUsed: number;
+  ramTotal: number;
+  disks: DiskStats[];
   networkSpeed: { download: number; upload: number };
-  updateUsage: (data: Partial<HardwareState>) => void;
+  updateStats: (data: Partial<HardwareState>) => void;
 }
 
 export const useHardwareStore = create<HardwareState>((set) => ({
   cpuUsage: 0,
   gpuUsage: 0,
-  ramUsage: 0,
+  ramUsagePercent: 0,
+  ramUsed: 0,
+  ramTotal: 0,
+  disks: [],
   networkSpeed: { download: 0, upload: 0 },
-  updateUsage: (data) => set((state) => ({ ...state, ...data })),
+  updateStats: (data) => set((state) => ({ ...state, ...data })),
 }));

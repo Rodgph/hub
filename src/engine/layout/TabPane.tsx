@@ -31,7 +31,11 @@ export function TabPane({ node, renderNode }: TabPaneProps) {
   return (
     <div ref={containerRef} className={styles.tabContainer}>
       <div className={styles.tabContent}>
-        {renderNode(node.children[node.activeIndex])}
+        {node.children && node.children[node.activeIndex] ? (
+          renderNode(node.children[node.activeIndex])
+        ) : (
+          <div style={{ padding: '20px', color: '#555' }}>Sem módulos ativos</div>
+        )}
       </div>
     </div>
   );

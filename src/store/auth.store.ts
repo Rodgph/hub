@@ -45,6 +45,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (session?.user) {
         console.log('[AuthStore] Sessão encontrada para:', session.user.email);
+        
         set({ user: {
           id: session.user.id,
           email: session.user.email!,

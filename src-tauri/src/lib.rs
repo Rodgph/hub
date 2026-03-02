@@ -1,4 +1,7 @@
-use tauri::{Manager, Runtime, Window};
+use tauri::Manager;
+
+mod jobs; // ← Registra o módulo de jobs
+pub mod commands; // ← Registra o módulo de comandos
 
 #[tauri::command]
 async fn show_main_window(app: tauri::AppHandle) {
@@ -24,6 +27,12 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
+            // Iniciar background jobs
+            let app_handle = app.handle().clone();
+            tokio::spawn(async move {
+                jobs::cold_storage::start(app_handle).await;
+            });
+
             // Garante que a janela principal esteja TOTALMENTE oculta no boot
             if let Some(main_window) = app.get_webview_window("main") {
                 let _ = main_window.hide();
@@ -39,7 +48,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             show_main_window,
-            close_auth_window
+            close_auth_window,
+            commands::hardware::get_hardware_stats
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

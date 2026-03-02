@@ -56,7 +56,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       .from('messages')
       .insert({
         conversation_id: conversationId,
-        author_id: userId,
+        sender_id: userId,
         content,
         type: 'text',
         status: 'sent'
@@ -65,6 +65,5 @@ export const useChatStore = create<ChatState>((set, get) => ({
     if (error) {
       console.error('[ChatStore] Erro ao enviar mensagem:', error);
     }
-    // Nota: Não adicionamos manualmente aqui pois o listener 'INSERT' do Realtime cuidará disso.
   }
 }));

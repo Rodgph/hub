@@ -37,6 +37,11 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       { id: 'feed', title: 'Feed', description: 'Ver novidades', category: 'module', icon: '📰', action: () => openModule(ModuleId.Feed) },
       { id: 'music', title: 'Music', description: 'Ouvir música', category: 'module', icon: '🎵', action: () => openModule(ModuleId.Music) },
       { id: 'browser', title: 'Browser', description: 'Navegar na web', category: 'module', icon: '🌐', action: () => openModule(ModuleId.Browser) },
+      { id: 'settings', title: 'Configurações', description: 'Ajustar sistema', category: 'module', icon: '⚙️', action: () => openModule(ModuleId.Settings) },
+      { id: 'cpu', title: 'CPU', description: 'Monitorar processador', category: 'module', icon: '⚡', action: () => openModule(ModuleId.CPU) },
+      { id: 'ram', title: 'RAM', description: 'Monitorar memória', category: 'module', icon: '🧠', action: () => openModule(ModuleId.RAM) },
+      { id: 'gpu', title: 'GPU', description: 'Monitorar placa de vídeo', category: 'module', icon: '🎮', action: () => openModule(ModuleId.GPU) },
+      { id: 'storage', title: 'Disco', description: 'Monitorar armazenamento', category: 'module', icon: '💾', action: () => openModule(ModuleId.Storage) },
     ];
 
     // 2. Ações de Sistema
@@ -100,17 +105,13 @@ export const useSearchStore = create<SearchState>((set, get) => ({
 }));
 
 function openModule(moduleId: ModuleId) {
-  const layout = useLayoutStore.getState();
-  const targetId = layout.activeNodeId || 'root';
-  
-  // No Tauri, como as janelas são processos separados, usamos o emit
-  // mas para garantir que funcione, vamos tentar ambos
+  // Emitimos um evento global para que a janela principal (que tem o LayoutStore real) processe o acoplamento
   import('@tauri-apps/api/event').then(m => {
-    m.emit('layout:insert-module', { moduleId });
+    m.emit('layout:dock-module', { moduleId });
   });
 
-  // Fecha a busca
+  // Fecha a janela de busca (Overlay)
   import('@tauri-apps/api/webviewWindow').then(m => {
-    m.getCurrentWebviewWindow().hide();
+    m.getCurrentWebviewWindow().hide().catch(() => {});
   });
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import { StoryItem } from './StoryItem';
 
 interface StoriesLineProps {
-  stories: Array<{
+  stories?: Array<{
     id: string;
     userId: string;
     username: string;
@@ -15,7 +15,7 @@ interface StoriesLineProps {
 /**
  * Linha horizontal de stories com scroll sutil.
  */
-export function StoriesLine({ stories, currentUserAvatar }: StoriesLineProps) {
+export function StoriesLine({ stories = [], currentUserAvatar }: StoriesLineProps) {
   return (
     <div style={{
       display: 'flex',

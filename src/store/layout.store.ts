@@ -1,7 +1,17 @@
 import { create } from 'zustand';
 import { LayoutNode, LayoutModule } from '@/types/layout.types';
 import { ModuleId } from '@/types/module.types';
-import * as treeUtils from '@/utils/layout-tree';
+import { 
+  insertNode, 
+  removeNode, 
+  findNode, 
+  mergeIntoTabs, 
+  updateNodeModule, 
+  updateRatio, 
+  setTabIndex, 
+  dockModule, 
+  undockModule 
+} from '@/utils/layout-tree';
 import { userService } from '@/services/user.service';
 import { useAuthStore } from './auth.store';
 
@@ -16,9 +26,23 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
 
 const initialLayout: LayoutNode = {
   id: 'root',
-  type: 'module',
-  moduleId: ModuleId.Empty,
+  type: 'split',
+  direction: 'horizontal',
+  ratio: 0.9,
   parentId: null,
+  firstChild: {
+    id: 'main-content',
+    type: 'module',
+    moduleId: ModuleId.Empty,
+    parentId: 'root',
+  },
+  secondChild: {
+    id: 'nav-bar',
+    type: 'module',
+    moduleId: ModuleId.Nav,
+    parentId: 'root',
+    dockedModules: [ModuleId.Chat, ModuleId.Feed, ModuleId.Profile, ModuleId.Settings],
+  }
 };
 
 interface LayoutState {
@@ -38,6 +62,8 @@ interface LayoutActions {
   updateRatio: (nodeId: string, ratio: number) => void;
   setActiveNode: (nodeId: string | null) => void;
   setTabIndex: (nodeId: string, index: number) => void;
+  undockModule: (targetId: string, moduleId: ModuleId) => void;
+  dockModule: (targetId: string, moduleId: ModuleId) => void;
   setDragState: (draggedId: string | null, targetId?: string | null, position?: 'top' | 'bottom' | 'left' | 'right' | 'center' | null) => void;
   resetLayout: () => void;
   saveLayout: () => void;
@@ -61,7 +87,7 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   insertNode: (targetId, newModuleId, position) => {
     set(state => ({
-      tree: treeUtils.insertNode(state.tree, targetId, {
+      tree: insertNode(state.tree, targetId, {
         id: crypto.randomUUID(),
         type: 'module',
         moduleId: newModuleId,
@@ -74,22 +100,33 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   moveNode: (sourceId, targetId, position, isAltPressed = false) => {
     if (sourceId === targetId) return;
-    const sourceNode = treeUtils.findNode(get().tree, sourceId) as LayoutModule;
+    const sourceNode = findNode(get().tree, sourceId) as LayoutModule;
     if (!sourceNode || sourceNode.type !== 'module') return;
 
     set(state => {
       let newTree;
+      const targetNode = findNode(state.tree, targetId) as LayoutModule;
+
+      // LOUCURA: Se o alvo for o Nav e o drop for no centro, docamos o módulo
+      if (targetNode?.moduleId === ModuleId.Nav && position === 'center') {
+        // 1. Remove o nó de origem da árvore principal
+        const treeWithoutSource = removeNode(state.tree, sourceId) || initialLayout;
+        // 2. Adiciona o moduleId de origem ao inventário do Nav
+        newTree = dockModule(treeWithoutSource, targetId, sourceNode.moduleId);
+        return { tree: newTree, revision: state.revision + 1, draggedNodeId: null, dropTargetId: null, dropPosition: null };
+      }
+
       if (isAltPressed) {
-        const tempTree = treeUtils.removeNode(state.tree, sourceId) || initialLayout;
-        newTree = treeUtils.mergeIntoTabs(tempTree, targetId, sourceNode);
+        const tempTree = removeNode(state.tree, sourceId) || initialLayout;
+        newTree = mergeIntoTabs(tempTree, targetId, sourceNode);
       } else if (position === 'center') {
-        const targetNode = treeUtils.findNode(state.tree, targetId) as LayoutModule;
+        const targetNode = findNode(state.tree, targetId) as LayoutModule;
         if (!targetNode || targetNode.type !== 'module') return state;
-        newTree = treeUtils.updateNodeModule(state.tree, sourceId, targetNode.moduleId);
-        newTree = treeUtils.updateNodeModule(newTree, targetId, sourceNode.moduleId);
+        newTree = updateNodeModule(state.tree, sourceId, targetNode.moduleId);
+        newTree = updateNodeModule(newTree, targetId, sourceNode.moduleId);
       } else {
-        const tempTree = treeUtils.removeNode(state.tree, sourceId) || initialLayout;
-        newTree = treeUtils.insertNode(tempTree, targetId, sourceNode, position);
+        const tempTree = removeNode(state.tree, sourceId) || initialLayout;
+        newTree = insertNode(tempTree, targetId, sourceNode, position);
       }
       return { tree: newTree, revision: state.revision + 1, draggedNodeId: null, dropTargetId: null, dropPosition: null };
     });
@@ -98,7 +135,7 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   removeNode: (nodeId) => {
     set(state => ({
-      tree: treeUtils.removeNode(state.tree, nodeId) || initialLayout,
+      tree: removeNode(state.tree, nodeId) || initialLayout,
       revision: state.revision + 1
     }));
     get().saveLayout();
@@ -106,7 +143,7 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   updateRatio: (nodeId, ratio) => {
     set(state => ({
-      tree: treeUtils.updateRatio(state.tree, nodeId, ratio),
+      tree: updateRatio(state.tree, nodeId, ratio),
       revision: state.revision + 1
     }));
     get().saveLayout();
@@ -114,9 +151,29 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   setTabIndex: (nodeId, index) => {
     set(state => ({
-      tree: treeUtils.setTabIndex(state.tree, nodeId, index),
+      tree: setTabIndex(state.tree, nodeId, index),
       revision: state.revision + 1
     }));
+    get().saveLayout();
+  },
+
+  undockModule: (targetId, moduleId) => {
+    set(state => {
+      return {
+        tree: undockModule(state.tree, targetId, moduleId),
+        revision: state.revision + 1
+      };
+    });
+    get().saveLayout();
+  },
+
+  dockModule: (targetId, moduleId) => {
+    set(state => {
+      return {
+        tree: dockModule(state.tree, targetId, moduleId),
+        revision: state.revision + 1
+      };
+    });
     get().saveLayout();
   },
 
@@ -139,8 +196,21 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
   loadLayout: async () => {
     const userId = useAuthStore.getState().user?.id;
     if (!userId) { set({ isLoaded: true }); return; }
-    const savedLayout = await userService.getLayout(userId);
-    if (savedLayout) set({ tree: savedLayout, revision: get().revision + 1 });
-    set({ isLoaded: true });
+    
+    try {
+      const savedLayout = await userService.getLayout(userId);
+      if (savedLayout && savedLayout.type) {
+        console.log('[LayoutStore] Layout carregado com sucesso');
+        set({ tree: savedLayout, revision: get().revision + 1 });
+      } else {
+        console.warn('[LayoutStore] Layout salvo inválido ou vazio, usando padrão');
+        set({ tree: initialLayout });
+      }
+    } catch (error) {
+      console.error('[LayoutStore] Falha ao carregar layout:', error);
+      set({ tree: initialLayout });
+    } finally {
+      set({ isLoaded: true });
+    }
   },
 }));

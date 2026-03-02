@@ -6,10 +6,14 @@ import { useAuthStore } from '@/store/auth.store';
 import { layoutRealtimeService } from '@/services/layout-realtime.service';
 
 import { OfflineBanner } from '@/components/shared/OfflineBanner/OfflineBanner';
+import { useHardware } from '@/hooks/useHardware';
 
 export function AppLayout() {
   const loadLayout = useLayoutStore(state => state.loadLayout);
   const user = useAuthStore(state => state.user);
+  
+  // Inicia o polling de hardware globalmente
+  useHardware();
 
   useEffect(() => {
     loadLayout();
@@ -57,23 +61,22 @@ export function AppLayout() {
     setup();
     return () => { if (unlisten) unlisten(); };
   }, []);
-
-  return (
-    <div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        background: 'var(--bg-base, #000000)',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}
-    >
-      <OfflineBanner />
-      <main style={{ flex: 1, overflow: 'hidden' }}>
-        <LayoutEngine />
-      </main>
-      <ContextMenu />
-    </div>
-  )
+return (
+  <div
+    style={{
+      width: '100vw',
+      height: '100vh',
+      background: 'var(--bg-base, #000000)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+    }}
+  >
+    <OfflineBanner />
+    <main style={{ flex: 1, overflow: 'hidden' }}>
+      <LayoutEngine />
+    </main>
+    <ContextMenu />
+  </div>
+)
 }

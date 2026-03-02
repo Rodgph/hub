@@ -1,0 +1,34 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.online { background-color: var(--status-online); }
+.away { background-color: var(--status-away); }
+.dnd { background-color: var(--status-dnd); }
+.offline { background-color: var(--status-offline); }
+
+.text {
+  display: flex;
+  flex-direction: column;
+}
+
+.statusLabel {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--color-title);
+}
+
+.activityLabel {
+  font-size: 11px;
+  color: var(--color-subtitle);
+}

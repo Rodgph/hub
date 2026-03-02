@@ -11,14 +11,25 @@ export function usePresence() {
   useEffect(() => {
     if (!user?.id) return;
 
+    let isUpdating = false;
+
     const updateStatus = async (status: 'online' | 'offline') => {
-      await supabase
-        .from('user_status')
-        .upsert({ 
-          user_id: user.id, 
-          status, 
-          last_seen_at: new Date().toISOString() 
-        });
+      if (isUpdating) return;
+      isUpdating = true;
+      
+      try {
+        await supabase
+          .from('user_status')
+          .upsert({ 
+            user_id: user.id, 
+            status, 
+            last_seen_at: new Date().toISOString() 
+          }, { onConflict: 'user_id' });
+      } catch (error) {
+        // Ignorar erros de conflito ou rede no status, não são críticos para a UI
+      } finally {
+        isUpdating = false;
+      }
     };
 
     // Marca como online ao entrar

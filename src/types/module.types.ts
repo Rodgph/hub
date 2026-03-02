@@ -20,6 +20,14 @@ export enum ModuleId {
   Settings = 'settings',
   Notifications = 'notifications',
   Welcome = 'welcome',
+  Profile = 'profile',
+  Nav = 'nav',
+
+  // Hardware/System Monitor
+  CPU = 'sys_cpu',
+  RAM = 'sys_ram',
+  GPU = 'sys_gpu',
+  Storage = 'sys_storage',
 
   // Placeholders/System
   Unknown = 'unknown',

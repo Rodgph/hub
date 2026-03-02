@@ -1,0 +1,68 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.container:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.container.active {
+  background: rgba(var(--accent-color-rgb, 0, 120, 212), 0.15);
+  border-color: var(--accent-color, #0078d4);
+}
+
+.coverWrapper {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playingIndicator {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-title, #fff);
+}
+
+.artist {
+  font-size: 0.8rem;
+  color: var(--color-subtitle, #7a7a7a);
+}
+
+.duration {
+  font-size: 0.8rem;
+  color: var(--color-subtitle, #7a7a7a);
+  font-family: monospace;
+}

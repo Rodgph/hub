@@ -1,0 +1,75 @@
+.bubbleWrapper {
+  display: flex;
+  margin-bottom: 2px;
+  max-width: 85%;
+  gap: 8px;
+}
+
+.mine {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.other {
+  align-self: flex-start;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 32px;
+}
+
+.bubble {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px 12px;
+  border-radius: 12px;
+  position: relative;
+  min-width: 60px;
+}
+
+.mine .bubble {
+  background: var(--color-title);
+  color: var(--bg-base);
+  border-bottom-right-radius: 4px;
+}
+
+.other .bubble {
+  border-bottom-left-radius: 4px;
+}
+
+.noAvatar {
+  margin-left: 40px;
+}
+
+.content {
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 10px;
+  margin-top: 2px;
+  opacity: 0.7;
+}
+
+.mine .meta {
+  color: var(--bg-base);
+}
+
+.time {
+  font-family: monospace;
+}
+
+.status {
+  font-size: 11px;
+}
+
+.edited {
+  font-style: italic;
+  font-size: 9px;
+}

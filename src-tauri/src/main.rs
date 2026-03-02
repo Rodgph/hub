@@ -4,6 +4,9 @@ use tauri::{AppHandle, Emitter, Manager, WebviewUrl, WebviewWindowBuilder, Liste
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut};
 use window_vibrancy::{apply_acrylic, apply_mica};
 
+mod commands;
+mod jobs;
+
 #[tauri::command]
 async fn show_main_window(app: tauri::AppHandle) {
     if let Some(main_window) = app.get_webview_window("main") {
@@ -35,6 +38,7 @@ async fn logout_transition(app: tauri::AppHandle) {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().with_handler(move |app, _shortcut, event| {
             if event.state == tauri_plugin_global_shortcut::ShortcutState::Pressed {
@@ -45,6 +49,13 @@ fn main() {
         .plugin(tauri_plugin_deep_link::init())
         .setup(|app| {
             let handle = app.handle().clone();
+            
+            // Iniciar background jobs
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                jobs::cold_storage::start(app_handle).await;
+            });
+
             app.listen("deep-link://new-url", move |event| {
                 if let Some(main_win) = handle.get_webview_window("main") {
                     let _ = main_win.emit("deep-link", event.payload());
@@ -77,7 +88,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             show_main_window,
             close_auth_window,
-            logout_transition
+            logout_transition,
+            commands::hardware::get_hardware_stats
         ])
         .run(tauri::generate_context!())
         .expect("erro ao iniciar o app");

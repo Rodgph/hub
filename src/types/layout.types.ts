@@ -17,6 +17,10 @@ export interface LayoutModule {
   moduleId: ModuleId;
   /** ID do nó pai. `null` se for a raiz. */
   parentId: string | null;
+  /** Módulos acoplados dentro deste nó (especialmente para o Nav) */
+  dockedModules?: ModuleId[];
+  /** Módulo acoplado atualmente visível */
+  activeDockedModule?: ModuleId | null;
 }
 
 /**

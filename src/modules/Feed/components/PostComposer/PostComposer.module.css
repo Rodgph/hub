@@ -1,0 +1,89 @@
+.container {
+  padding: 1.5rem;
+  background: var(--bg-module, #020202);
+  border-radius: var(--radius-module, 20px);
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-subtitle, #7a7a7a);
+}
+
+.textarea {
+  width: 100%;
+  min-height: 80px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-title, #fff);
+  font-size: 1.1rem;
+  resize: none;
+  padding: 0.5rem 0;
+}
+
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+}
+
+.mediaButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mediaBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-subtitle, #7a7a7a);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-interactive, 100px);
+  transition: all 0.2s ease;
+}
+
+.mediaBtn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-title, #fff);
+}
+
+.postBtn {
+  background: var(--accent-color, #0078d4);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-interactive, 100px);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.postBtn:hover:not(:disabled) {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.postBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

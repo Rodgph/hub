@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchStore } from '@/store/search.store';
+import { FollowButton } from './FollowButton';
 import styles from './GlobalSearch.module.css';
 
 interface GlobalSearchProps {
@@ -60,6 +61,11 @@ export function GlobalSearch({ inputRef }: GlobalSearchProps) {
                 <span className={styles.resultTitle}>{result.title}</span>
                 <span className={styles.resultDescription}>{result.description}</span>
               </div>
+              
+              {result.category === 'user' && (
+                <FollowButton targetUserId={result.id.replace('user-', '')} />
+              )}
+
               <span className={styles.categoryBadge}>{result.category}</span>
               {index === selectedIndex && <span className={styles.enterHint}>↵</span>}
             </div>

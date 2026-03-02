@@ -153,6 +153,34 @@
 .dropIndicator.left { top: 0; left: 0; bottom: 0; width: 50%; }
 .dropIndicator.right { top: 0; right: 0; bottom: 0; width: 50%; }
 
+/* LOUCURA: Docking Styles */
+.dockIndicator {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100% !important;
+    width: 100% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 2px dashed white !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dockText {
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    animation: fadeIn 0.2s var(--ease-out);
+}
+
+.isNav {
+    /* O Nav já é preto, vamos dar um destaque maior no hover de drag */
+}
+
 .moduleContent {
     flex: 1;
     width: 100%;
@@ -163,6 +191,38 @@
 .moduleContent.isDragging {
     pointer-events: none;
     opacity: 0.7;
+}
+
+.navContent {
+    flex: none !important;
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    overflow: visible !important;
+}
+
+/* Seletor de atributo para garantir que o container do Nav também encolha */
+[data-module-id="nav"] {
+    flex: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Quando horizontal (topo/base), trava altura em 50px */
+[data-module-id="nav"][data-nav-orientation="horizontal"] {
+    height: 50px !important;
+    min-height: 50px !important;
+    max-height: 50px !important;
+    width: 100% !important;
+}
+
+/* Quando vertical (laterais), trava largura em 50px */
+[data-module-id="nav"][data-nav-orientation="vertical"] {
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    height: 100% !important;
 }
 
 .placeholder {

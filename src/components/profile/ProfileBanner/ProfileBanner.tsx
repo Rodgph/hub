@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './profile.module.css';
+import styles from '../ProfileAvatar/profile.module.css';
 
 interface ProfileBannerProps {
   userId: string;
@@ -13,12 +13,23 @@ export function ProfileBanner({
   type = 'color', 
   variant = 'card' 
 }: ProfileBannerProps) {
+  const getMediaUrl = (originalUrl?: string) => {
+    if (!originalUrl) return null;
+    if (originalUrl.startsWith('http') || originalUrl.startsWith('data:')) return originalUrl;
+    return `https://asset.localhost/${originalUrl}`;
+  };
+
+  const finalUrl = getMediaUrl(url);
+
   const renderContent = () => {
+    if (!finalUrl && type !== 'color' && type !== 'gradient') return null;
+
     switch (type) {
       case 'video':
-        return <video src={url} autoPlay muted loop className={styles.bannerMedia} />;
+        return <video src={finalUrl!} autoPlay muted loop className={styles.bannerMedia} />;
       case 'image':
-        return <img src={url} alt="Banner" className={styles.bannerMedia} />;
+      case 'gif':
+        return <img src={finalUrl!} alt="Banner" className={styles.bannerMedia} />;
       case 'gradient':
         return <div className={styles.bannerGradient} style={{ background: url }} />;
       default:

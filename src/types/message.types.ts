@@ -14,7 +14,7 @@ export interface MessageEdit {
 export interface Message {
   id: string;
   conversation_id: string;
-  author_id: string;
+  sender_id: string;
   content: string;
   type: 'text' | 'image' | 'video' | 'file' | 'system';
   status: MessageStatus;

@@ -16,13 +16,30 @@ export function EmptyPane({ nodeId }: EmptyPaneProps) {
 
     const handleContextMenu = (e: React.MouseEvent) => {
         const menuItems: MenuItem[] = [
-            { id: 'add-chat', label: 'Adicionar Chat', action: () => insertNode(nodeId, ModuleId.Chat, 'center'), icon: '💬' },
-            { id: 'add-feed', label: 'Adicionar Feed', action: () => insertNode(nodeId, ModuleId.Feed, 'center'), icon: '📰' },
-            { id: 'add-music', label: 'Adicionar Música', action: () => insertNode(nodeId, ModuleId.Music, 'center'), icon: '🎵' },
-            { id: 'separator-1', isSeparator: true, label: '', action: () => {} },
+            { id: 'add-nav', label: 'Navegação (Barra)', action: () => insertNode(nodeId, ModuleId.Nav, 'center'), icon: '🧭' },
+            { id: 'sep-p', type: 'separator' } as any,
+            { id: 'add-chat', label: 'Chat DM', action: () => insertNode(nodeId, ModuleId.Chat, 'center'), icon: '💬' },
+            { id: 'add-feed', label: 'Feed Social', action: () => insertNode(nodeId, ModuleId.Feed, 'center'), icon: '📰' },
+            { id: 'add-music', label: 'Música & Player', action: () => insertNode(nodeId, ModuleId.Music, 'center'), icon: '🎵' },
+            { id: 'add-games', label: 'Jogos & Apps', action: () => insertNode(nodeId, ModuleId.FavoriteGames, 'center'), icon: '🎮' },
+            { id: 'add-live', label: 'Lives ao Vivo', action: () => insertNode(nodeId, ModuleId.Live, 'center'), icon: '📺' },
+            { id: 'sep-h', type: 'separator' } as any,
+            { 
+                id: 'hardware', 
+                label: 'Monitores de Hardware', 
+                icon: '⚡',
+                children: [
+                    { id: 'add-cpu', label: 'Uso de CPU', action: () => insertNode(nodeId, ModuleId.CPU, 'center'), icon: '⚡' },
+                    { id: 'add-ram', label: 'Memória RAM', action: () => insertNode(nodeId, ModuleId.RAM, 'center'), icon: '🧠' },
+                    { id: 'add-gpu', label: 'Placa de Vídeo', action: () => insertNode(nodeId, ModuleId.GPU, 'center'), icon: '🎮' },
+                    { id: 'add-hd', label: 'Armazenamento', action: () => insertNode(nodeId, ModuleId.Storage, 'center'), icon: '💾' },
+                ]
+            },
+            { id: 'add-settings', label: 'Configurações', action: () => insertNode(nodeId, ModuleId.Settings, 'center'), icon: '⚙️' },
+            { id: 'separator-1', type: 'separator' } as any,
             { id: 'split-vertical', label: 'Dividir na Vertical', action: () => insertNode(nodeId, ModuleId.Empty, 'right'), icon: '↔️' },
             { id: 'split-horizontal', label: 'Dividir na Horizontal', action: () => insertNode(nodeId, ModuleId.Empty, 'bottom'), icon: '↕️' },
-            { id: 'separator-2', isSeparator: true, label: '', action: () => {} },
+            { id: 'separator-2', type: 'separator' } as any,
             { 
                 id: 'logoff', 
                 label: 'Sair do Sistema', 

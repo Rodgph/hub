@@ -1,0 +1,25 @@
+.container {
+  padding: 1.5rem;
+  color: var(--text-primary, #fff);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.section p {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
