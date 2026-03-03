@@ -108,7 +108,7 @@ fn create_auth_window(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>>
     .inner_size(400.0, 600.0)
     .resizable(false)
     .decorations(false)
-    .transparent(true)
+    .transparent(false)
     .shadow(true)
     .center()
     .visible(true)

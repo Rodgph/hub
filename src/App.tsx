@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import '@/styles/global.module.css';
 import '@/styles/tokens.css';
 import '@/styles/themes/dark.css';
@@ -51,10 +51,10 @@ export default function App() {
 
   // PRIORIDADE: Roteamento da Janela Principal
   if (windowLabel === 'main') {
-    // Se não houver usuário ou ainda estiver carregando a sessão,
-    // não renderiza ABSOLUTAMENTE NADA para a janela principal.
-    // Isso garante que ela fique 100% oculta/vazia até o login.
-    if (isLoading || !user) return null;
+    // NUNCA retornar null para evitar o "buraco visual"
+    if (isLoading || !user) {
+      return <div style={{ width: '100vw', height: '100vh', background: '#020202' }} />;
+    }
 
     return (
       <RealtimeProvider>
@@ -65,14 +65,16 @@ export default function App() {
 
   // Estado de Carregamento (Apenas para a janela de AUTH)
   if (isLoading) {
-    return <div style={{ width: '100vw', height: '100vh', background: '#000' }} />;
+    return <div style={{ width: '100vw', height: '100vh', background: '#020202' }} />;
   }
 
   // JANELA DE AUTENTICAÇÃO
   if (windowLabel === 'auth') {
-    if (user) return <div style={{ width: '100vw', height: '100vh', background: '#000' }} />;
+    // Se já tem usuário, a janela auth está em processo de fechar, mantém o fundo escuro
+    if (user) return <div style={{ width: '100vw', height: '100vh', background: '#020202' }} />;
     return <LoginScreen />;
   }
 
-  return null;
+  // Fallback seguro
+  return <div style={{ width: '100vw', height: '100vh', background: '#020202' }} />;
 }
