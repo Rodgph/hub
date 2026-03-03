@@ -111,6 +111,7 @@ export function NavModule() {
           { id: 'add-music', label: 'Música', icon: '🎵', action: () => handleDock(ModuleId.Music) },
           { id: 'add-games', label: 'Jogos e Apps', icon: '🎮', action: () => handleDock(ModuleId.FavoriteGames) },
           { id: 'add-live', label: 'Lives ao Vivo', icon: '📺', action: () => handleDock(ModuleId.Live) },
+          { id: 'add-browser', label: 'Navegador', icon: '🌐', action: () => handleDock(ModuleId.Browser) },
         ]
       });
     }
@@ -181,6 +182,7 @@ export function NavModule() {
         case ModuleId.Music: return '🎵';
         case ModuleId.Profile: return '👤';
         case ModuleId.Settings: return '⚙️';
+        case ModuleId.Browser: return '🌐';
         case ModuleId.CPU: return <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{cpuUsage.toFixed(0)}%</span>;
         case ModuleId.RAM: return <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>{ramUsagePercent.toFixed(0)}%</span>;
         case ModuleId.GPU: return '🎮';
@@ -348,6 +350,7 @@ function getModuleName(id: ModuleId): string {
         case ModuleId.RAM: return 'Monitor de RAM';
         case ModuleId.GPU: return 'Monitor de GPU';
         case ModuleId.Storage: return 'Monitor de Disco';
+        case ModuleId.Browser: return 'Navegador';
         default: return 'Módulo';
     }
 }

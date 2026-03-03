@@ -1,22 +1,14 @@
-import { MessageBubble } from '../MessageBubble/MessageBubble'
-import styles from './MessageGroup.module.css'
+import React from 'react';
+import styles from './MessageGroup.module.css';
 
 interface MessageGroupProps {
-  messages: any[]
-  currentUserId: string
+  children: React.ReactNode;
 }
 
-export function MessageGroup({ messages, currentUserId }: MessageGroupProps) {
+export function MessageGroup({ children }: MessageGroupProps) {
   return (
     <div className={styles.group}>
-      {messages.map((msg, index) => (
-        <MessageBubble 
-          key={msg.id} 
-          message={msg} 
-          isMine={msg.sender_id === currentUserId}
-          isFirstInGroup={index === 0}
-        />
-      ))}
+      {children}
     </div>
-  )
+  );
 }

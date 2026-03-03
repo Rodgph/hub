@@ -24,6 +24,13 @@ function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
     };
 }
 
+const EMPTY_LAYOUT: LayoutNode = {
+  id: 'root',
+  type: 'module',
+  moduleId: ModuleId.Empty,
+  parentId: null,
+};
+
 const initialLayout: LayoutNode = {
   id: 'root',
   type: 'split',
@@ -110,14 +117,14 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
       // LOUCURA: Se o alvo for o Nav e o drop for no centro, docamos o módulo
       if (targetNode?.moduleId === ModuleId.Nav && position === 'center') {
         // 1. Remove o nó de origem da árvore principal
-        const treeWithoutSource = removeNode(state.tree, sourceId) || initialLayout;
+        const treeWithoutSource = removeNode(state.tree, sourceId) || EMPTY_LAYOUT;
         // 2. Adiciona o moduleId de origem ao inventário do Nav
         newTree = dockModule(treeWithoutSource, targetId, sourceNode.moduleId);
         return { tree: newTree, revision: state.revision + 1, draggedNodeId: null, dropTargetId: null, dropPosition: null };
       }
 
       if (isAltPressed) {
-        const tempTree = removeNode(state.tree, sourceId) || initialLayout;
+        const tempTree = removeNode(state.tree, sourceId) || EMPTY_LAYOUT;
         newTree = mergeIntoTabs(tempTree, targetId, sourceNode);
       } else if (position === 'center') {
         const targetNode = findNode(state.tree, targetId) as LayoutModule;
@@ -125,7 +132,7 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
         newTree = updateNodeModule(state.tree, sourceId, targetNode.moduleId);
         newTree = updateNodeModule(newTree, targetId, sourceNode.moduleId);
       } else {
-        const tempTree = removeNode(state.tree, sourceId) || initialLayout;
+        const tempTree = removeNode(state.tree, sourceId) || EMPTY_LAYOUT;
         newTree = insertNode(tempTree, targetId, sourceNode, position);
       }
       return { tree: newTree, revision: state.revision + 1, draggedNodeId: null, dropTargetId: null, dropPosition: null };
@@ -135,7 +142,7 @@ export const useLayoutStore = create<LayoutState & LayoutActions>((set, get) => 
 
   removeNode: (nodeId) => {
     set(state => ({
-      tree: removeNode(state.tree, nodeId) || initialLayout,
+      tree: removeNode(state.tree, nodeId) || EMPTY_LAYOUT,
       revision: state.revision + 1
     }));
     get().saveLayout();

@@ -401,6 +401,42 @@ Criar componentes que serão usados em TODA a fase de desenvolvimento:
 
 ---
 
+## FASE 6.5 — Advanced Chat Interactions
+> **Objetivo:** Transformar o chat em uma ferramenta social de alta performance com interações ricas.
+> **Dependências:** Fase 6 completa.
+
+- [ ] **SyncShare:** Implementar sincronização de estado de player (Play/Pause/Seek) via canais Realtime específicos para ouvir música ou ver vídeos juntos.
+- [ ] **Code Snippets:** Integrar Monaco Editor ou Prism.js para renderização de blocos de código com highlight e botão "Copiar".
+- [ ] **Quick Reminders:** Implementar sistema de notificações agendadas via Tauri no Rust para lembretes sobre mensagens específicas.
+- [ ] **Shared Whiteboard:** Criar componente Canvas para desenho rápido (300x300) e exportação em .webp para rascunhos instantâneos.
+- [ ] **Screen Snip & Annotate:** Implementar captura de tela nativa no Rust e ferramentas de anotação no frontend.
+- [ ] **Nudge (Janela Tremer):** Criar comando Rust `window_nudge` que manipula a posição da janela para simular o efeito de tremer.
+- [ ] **Voice Transcription:** Integrar serviço de transcrição (local ou API) para transformar áudios em texto visível abaixo da bolha.
+
+---
+
+## FASE 6.6 — Chat Revolution (Experimental)
+> **Objetivo:** Implementar as mecânicas que mudam o paradigma de como um chat funciona, tornando-o orgânico e gamificado.
+
+- [ ] **Conversa Viva (Dynamic UI):** Motor que calcula a "temperatura" da conversa baseado no intervalo de mensagens e muda as variáveis CSS do tema localmente.
+- [ ] **Identidade Camaleão:** Permitir override de `avatar_url` e `display_name` a nível de `conversation_members`.
+- [ ] **Burn After Read:** Implementar componente de bolha que detecta o "Intersection Observer" e deleta a mensagem após X segundos de visualização.
+- [ ] **Mensagens Trancadas (Tempo/Local):** UI de "Cadeado" para mensagens que têm `unlock_at` ou `unlock_location`. Bloqueio validado no frontend e backend.
+- [ ] **Silent Messages & Vault:** Implementar envio de mensagem que ignora a fila de notificações e o "Cofre" local para esconder DMs.
+
+---
+
+## FASE 26 — Ghost Files (Social Cloud P2P)
+- [ ] **Privacy Stripper (Rust):** Implementar biblioteca para limpar metadados de arquivos antes do stream.
+- [ ] **Ghost Send Engine:** Lógica de streaming P2P com trigger de auto-deleção no receptor via Tauri FS.
+- [ ] **Social Folder:** Sincronização de eventos de diretório (Watcher) com notificações Realtime.
+
+## FASE 27 — Squad Launcher & Social Macros
+- [ ] **Preset Engine:** Sistema de salvar estados (apps abertos, volume, performance).
+- [ ] **Global Sync:** Disparo de presets para múltiplos clientes via canais de grupo.
+
+---
+
 ## FASE 7 — BottomBar Global
 > **Objetivo:** Barra inferior com todos os indicadores em tempo real.
 > **Dependências:** Fases 3 (presença), 4 (perfil), 6 (chat), Rust commands de hardware.

@@ -23,6 +23,7 @@ export function EmptyPane({ nodeId }: EmptyPaneProps) {
             { id: 'add-music', label: 'Música & Player', action: () => insertNode(nodeId, ModuleId.Music, 'center'), icon: '🎵' },
             { id: 'add-games', label: 'Jogos & Apps', action: () => insertNode(nodeId, ModuleId.FavoriteGames, 'center'), icon: '🎮' },
             { id: 'add-live', label: 'Lives ao Vivo', action: () => insertNode(nodeId, ModuleId.Live, 'center'), icon: '📺' },
+            { id: 'add-browser', label: 'Navegador Web', action: () => insertNode(nodeId, ModuleId.Browser, 'center'), icon: '🌐' },
             { id: 'sep-h', type: 'separator' } as any,
             { 
                 id: 'hardware', 

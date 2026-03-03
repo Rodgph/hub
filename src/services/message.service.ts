@@ -1,6 +1,14 @@
 import { supabase } from '@/config/supabase'
 import { mapSupabaseError } from '@/utils/errors'
 
+// Helper para gerar hash de senha (nativo)
+async function hashPassword(password: string) {
+  const msgUint8 = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export const messageService = {
   async getConversations() {
     const { data, error } = await supabase
@@ -28,21 +36,50 @@ export const messageService = {
     return data
   },
 
-  async sendMessage(conversationId: string, content: string) {
+  async sendMessage(conversationId: string, content: string, options: any = {}) {
     const { data: { user } } = await supabase.auth.getUser()
     
+    const payload: any = {
+      conversation_id: conversationId,
+      sender_id: user?.id,
+      content: options.has_password ? null : content,
+      private_content: options.has_password ? content : null,
+      has_password: options.has_password || false,
+      scheduled_for: options.scheduled_for || null,
+      is_silent: options.is_silent || false,
+      burn_after_read: options.burn_after_read || false
+    }
+
+    if (options.has_password && options.password) {
+      payload.password_hash = await hashPassword(options.password)
+    }
+
     const { data, error } = await supabase
       .from('messages')
-      .insert({
-        conversation_id: conversationId,
-        content,
-        sender_id: user?.id
-      })
+      .insert(payload)
       .select()
       .single()
 
     if (error) throw mapSupabaseError(error)
     return data
+  },
+
+  async unlockMessage(messageId: string, password: string) {
+    const hash = await hashPassword(password)
+    
+    const { data, error } = await supabase
+      .from('messages')
+      .select('private_content, password_hash')
+      .eq('id', messageId)
+      .single()
+
+    if (error) throw mapSupabaseError(error)
+    
+    if (data.password_hash === hash) {
+      return data.private_content
+    }
+    
+    throw new Error('Senha incorreta')
   },
   
   async getMessages(conversationId: string, limit = 50) {

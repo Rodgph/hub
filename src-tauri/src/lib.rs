@@ -1,7 +1,10 @@
 use tauri::Manager;
 
-mod jobs; // ← Registra o módulo de jobs
-pub mod commands; // ← Registra o módulo de comandos
+mod jobs;
+pub mod commands;
+
+use commands::webview::{create_browser_webview, update_webview_bounds, destroy_webview};
+use commands::hardware::get_hardware_stats;
 
 #[tauri::command]
 async fn show_main_window(app: tauri::AppHandle) {
@@ -49,7 +52,10 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             show_main_window,
             close_auth_window,
-            commands::hardware::get_hardware_stats
+            get_hardware_stats,
+            create_browser_webview,
+            update_webview_bounds,
+            destroy_webview
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

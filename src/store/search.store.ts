@@ -20,6 +20,8 @@ interface SearchState {
   setQuery: (query: string) => Promise<void>;
   setSelectedIndex: (index: number) => void;
   executeSelected: () => void;
+  openDirectMessage: (userId: string) => void;
+  openProfile: (userId: string) => void;
 }
 
 export const useSearchStore = create<SearchState>((set, get) => ({
@@ -30,6 +32,11 @@ export const useSearchStore = create<SearchState>((set, get) => ({
 
   setQuery: async (query) => {
     set({ query, isLoading: true });
+
+    if (!query.trim()) {
+      set({ results: [], isLoading: false, selectedIndex: 0 });
+      return;
+    }
 
     // 1. Módulos Estáticos
     const modules: SearchResult[] = [
@@ -57,37 +64,29 @@ export const useSearchStore = create<SearchState>((set, get) => ({
       r.description.toLowerCase().includes(query.toLowerCase())
     );
 
-    // 3. Busca de Usuários no Supabase (apenas se começar com @)
     if (query.startsWith('@') && query.length > 1) {
-      const searchTerm = query.substring(1); // Remove o @
-      const { data: users } = await supabase
-        .from('users')
-        .select('id, username, display_name, avatar_url')
-        .or(`username.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`)
-        .limit(5);
+      const searchTerm = query.substring(1);
+      try {
+        const { data: users } = await supabase
+          .from('users')
+          .select('id, username, display_name, avatar_url')
+          .or(`username.ilike.%${searchTerm}%,display_name.ilike.%${searchTerm}%`)
+          .limit(5);
 
-      if (users) {
-        const userResults: SearchResult[] = users.map(u => {
-          // Limpeza de segurança caso o banco ainda tenha e-mails como nomes
-          const cleanName = (u.display_name || u.username).split('@')[0];
-          const cleanUser = u.username.split('@')[0];
-
-          return {
+        if (users) {
+          const userResults: SearchResult[] = users.map(u => ({
             id: `user-${u.id}`,
-            title: cleanName,
-            description: `@${cleanUser}`,
+            title: (u.display_name || u.username).split('@')[0],
+            description: `@${u.username.split('@')[0]}`,
             category: 'user',
             icon: '👤',
-            action: () => {
-              openModule(ModuleId.Chat);
-            }
-          };
-        });
-        results = userResults; 
+            action: () => get().openProfile(u.id)
+          }));
+          results = [...results, ...userResults];
+        }
+      } catch (error) {
+        console.error('Erro na busca de usuários:', error);
       }
-    } else {
-      // Se não começar com @, filtra apenas os resultados locais (módulos e ações)
-      results = results.filter(r => r.category !== 'user');
     }
 
     set({ results, selectedIndex: 0, isLoading: false });
@@ -95,12 +94,34 @@ export const useSearchStore = create<SearchState>((set, get) => ({
 
   setSelectedIndex: (index) => set({ selectedIndex: index }),
 
+  clearSearch: () => set({ query: '', results: [], selectedIndex: 0, isLoading: false }),
+
   executeSelected: () => {
     const { results, selectedIndex } = get();
     if (results[selectedIndex]) {
       results[selectedIndex].action();
       set({ query: '', results: [] });
     }
+  },
+
+  openDirectMessage: (userId) => {
+    // 1. Abre o módulo de Chat na Nav
+    openModule(ModuleId.Chat);
+    
+    // 2. Avisa o módulo de chat para iniciar/abrir a conversa com este usuário
+    import('@tauri-apps/api/event').then(m => {
+      m.emit('chat:open-dm', { userId });
+    });
+  },
+
+  openProfile: (userId) => {
+    // 1. Abre o módulo de Perfil na Nav
+    openModule(ModuleId.Profile);
+    
+    // 2. Avisa o módulo de perfil para carregar este usuário
+    import('@tauri-apps/api/event').then(m => {
+      m.emit('profile:open', { userId });
+    });
   }
 }));
 

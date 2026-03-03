@@ -1,47 +1,45 @@
-import { useEffect } from 'react'
-import { useChatStore } from '@/store/modules/chat.store'
-import { ChatCard } from '../../components/ChatCard/ChatCard'
-import { HomeHeader } from './HomeHeader'
-import { HomeFooter } from './HomeFooter'
-import styles from './Home.module.css'
+import React, { useEffect } from 'react';
+import { useChatStore } from '@/store/modules/chat.store';
+import { ChatCard } from '../../components/ChatCard/ChatCard';
+import { Skeleton } from '@/components/ui/Skeleton/Skeleton';
+import styles from './Home.module.css';
 
-interface HomeScreenProps {
-  onSelectConversation: () => void
-}
-
-export function HomeScreen({ onSelectConversation }: HomeScreenProps) {
-  const { conversations, loadConversations, activeConversationId, setActiveConversation } = useChatStore()
+export function HomeScreen() {
+  const { conversations, loadConversations, isLoading, setActiveConversation, activeConversationId } = useChatStore();
 
   useEffect(() => {
-    loadConversations()
-  }, [])
-
-  const handleSelect = (id: string) => {
-    setActiveConversation(id)
-    onSelectConversation()
-  }
+    loadConversations();
+  }, [loadConversations]);
 
   return (
-    <div className={styles.homeScreen}>
-      <HomeHeader />
-      
-      <div className={styles.scrollArea}>
-        {conversations.map(conv => (
-          <ChatCard 
-            key={conv.id} 
-            conversation={conv}
-            isActive={activeConversationId === conv.id}
-            onClick={() => handleSelect(conv.id)} 
-          />
-        ))}
-        {conversations.length === 0 && (
-          <div className={styles.empty}>
-             💬 Nenhuma conversa ainda
-          </div>
-        )}
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h2 className={styles.title}>Mensagens</h2>
+        <button className={styles.newChatBtn}>+</button>
+      </header>
+
+      <div className={styles.searchBox}>
+        <input type="text" placeholder="Buscar conversas..." className={styles.searchInput} />
       </div>
 
-      <HomeFooter />
+      <div className={styles.list}>
+        {isLoading && conversations.length === 0 ? (
+          [1, 2, 3, 4].map(i => (
+            <div key={i} style={{ padding: '1rem' }}>
+              <Skeleton width="100%" height="60px" borderRadius="12px" />
+            </div>
+          ))
+        ) : (
+          conversations.map(conv => (
+            <ChatCard 
+              key={conv.id} 
+              conversation={conv} 
+              isActive={activeConversationId === conv.id}
+              onClick={() => setActiveConversation(conv.id)}
+            />
+          ))
+        )}
+      </div>
     </div>
-  )
+  );
 }

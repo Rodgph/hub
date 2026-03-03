@@ -7,6 +7,9 @@ use window_vibrancy::{apply_acrylic, apply_mica};
 mod commands;
 mod jobs;
 
+use commands::webview::{create_browser_webview, update_webview_bounds, destroy_webview};
+use commands::hardware::get_hardware_stats;
+
 #[tauri::command]
 async fn show_main_window(app: tauri::AppHandle) {
     if let Some(main_window) = app.get_webview_window("main") {
@@ -26,13 +29,10 @@ async fn close_auth_window(app: tauri::AppHandle) {
 
 #[tauri::command]
 async fn logout_transition(app: tauri::AppHandle) {
-    // 1. Esconde a janela principal
     if let Some(main_window) = app.get_webview_window("main") {
         let _ = main_window.hide();
         let _ = main_window.set_skip_taskbar(true);
     }
-
-    // 2. Cria a janela de auth novamente
     let _ = create_auth_window(&app);
 }
 
@@ -78,7 +78,7 @@ fn main() {
             // Cria a janela de auth inicial
             create_auth_window(app.handle())?;
 
-            create_search_window(app.handle())?;
+            // REMOVIDO: A janela de busca agora é LAZY (criada apenas no primeiro toggle)
 
             let shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
             let _ = app.global_shortcut().register(shortcut);
@@ -89,7 +89,10 @@ fn main() {
             show_main_window,
             close_auth_window,
             logout_transition,
-            commands::hardware::get_hardware_stats
+            get_hardware_stats,
+            create_browser_webview,
+            update_webview_bounds,
+            destroy_webview
         ])
         .run(tauri::generate_context!())
         .expect("erro ao iniciar o app");
@@ -114,14 +117,30 @@ fn create_auth_window(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>>
     Ok(())
 }
 
-fn create_search_window(app: &AppHandle) -> Result<(), Box<dyn std::error::Error>> {
-    let main_win = app
-        .get_webview_window("main")
-        .ok_or("janela main nao encontrada")?;
+fn toggle_search(app: &AppHandle) {
+    // 1. Se a janela já existe, apenas alterna visibilidade
+    if let Some(win) = app.get_webview_window("search") {
+        if win.is_visible().unwrap_or(false) {
+            let _ = win.hide();
+        } else {
+            let _ = win.unminimize();
+            let _ = win.show();
+            let _ = win.set_focus();
+            let _ = win.emit("search:focused", ());
+        }
+        return;
+    }
 
-    let monitor = main_win
-        .current_monitor()?
-        .ok_or("monitor nao encontrado")?;
+    // 2. Se não existe, cria agora (LAZY CREATION)
+    let main_win = match app.get_webview_window("main") {
+        Some(w) => w,
+        None => return,
+    };
+
+    let monitor = match main_win.current_monitor() {
+        Ok(Some(m)) => m,
+        _ => return,
+    };
 
     let screen_size = monitor.size();
     let screen_pos = monitor.position();
@@ -146,38 +165,26 @@ fn create_search_window(app: &AppHandle) -> Result<(), Box<dyn std::error::Error
     .always_on_top(true)
     .skip_taskbar(true)
     .shadow(true)
-    .visible(false)
-    .build()?;
+    .visible(true)
+    .focused(true)
+    .build();
 
-    #[cfg(target_os = "windows")]
-    {
-        if apply_mica(&search_win, Some(true)).is_err() {
-            let _ = apply_acrylic(&search_win, Some((0, 0, 0, 200)));
+    if let Ok(win) = search_win {
+        #[cfg(target_os = "windows")]
+        {
+            if apply_mica(&win, Some(true)).is_err() {
+                let _ = apply_acrylic(&win, Some((0, 0, 0, 200)));
+            }
         }
-    }
 
-    let win_clone = search_win.clone();
-    search_win.on_window_event(move |event| {
-        if let tauri::WindowEvent::Focused(false) = event {
-            let _ = win_clone.hide();
-        }
-    });
+        // Auto-hide ao perder foco
+        let win_clone = win.clone();
+        win.on_window_event(move |event| {
+            if let tauri::WindowEvent::Focused(false) = event {
+                let _ = win_clone.hide();
+            }
+        });
 
-    Ok(())
-}
-
-fn toggle_search(app: &AppHandle) {
-    let Some(win) = app.get_webview_window("search") else {
-        return;
-    };
-
-    if win.is_visible().unwrap_or(false) {
-        let _ = win.hide();
-    } else {
-        let _ = win.unminimize();
-        let _ = win.show();
-        let _ = win.set_focus();
-        let _ = win.set_focus(); // intencional: fix bug Windows
         let _ = win.emit("search:focused", ());
     }
 }

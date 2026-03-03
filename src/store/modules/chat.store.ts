@@ -11,9 +11,10 @@ interface ChatState {
   loadConversations: () => Promise<void>
   loadMessages: (conversationId: string) => Promise<void>
   setActiveConversation: (id: string | null) => void
-  sendMessage: (conversationId: string, content: string) => Promise<void>
+  sendMessage: (conversationId: string, content: string, options?: any) => Promise<void>
   editMessage: (conversationId: string, messageId: string, content: string) => Promise<void>
   deleteMessage: (conversationId: string, messageId: string) => Promise<void>
+  unlockMessage: (conversationId: string, messageId: string, password: string) => Promise<boolean>
   addMessageRealtime: (conversationId: string, message: any) => void
 }
 
@@ -58,13 +59,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }))
   },
 
-  sendMessage: async (conversationId, content) => {
+  sendMessage: async (conversationId, content, options = {}) => {
     const tempId = `temp_${crypto.randomUUID()}`
     const newMessage = {
       id: tempId,
       conversation_id: conversationId,
-      content,
+      content: options.has_password ? null : content,
       status: 'sending',
+      has_password: options.has_password || false,
+      scheduled_for: options.scheduled_for || null,
       created_at: new Date().toISOString()
     }
 
@@ -76,7 +79,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }))
 
     try {
-      const saved = await messageService.sendMessage(conversationId, content)
+      const saved = await messageService.sendMessage(conversationId, content, options)
       set(state => ({
         messages: {
           ...state.messages,
@@ -89,7 +92,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       if (error.type === 'network') {
         useOfflineStore.getState().addToQueue({
           type: 'send_message',
-          payload: { conversationId, content }
+          payload: { conversationId, content, options }
         })
       }
       
@@ -104,8 +107,28 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 
+  unlockMessage: async (conversationId, messageId, password) => {
+    try {
+      const content = await messageService.unlockMessage(messageId, password)
+      if (content) {
+        set(state => ({
+          messages: {
+            ...state.messages,
+            [conversationId]: (state.messages[conversationId] || []).map(m => 
+              m.id === messageId ? { ...m, content, is_unlocked: true } : m
+            )
+          }
+        }))
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('[ChatStore] Falha ao desbloquear:', error)
+      return false
+    }
+  },
+
   editMessage: async (conversationId, messageId, content) => {
-    // Optimistic Update
     const originalMessages = get().messages[conversationId]
     set(state => ({
       messages: {

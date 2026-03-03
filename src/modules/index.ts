@@ -10,6 +10,7 @@ import { FeedModule } from './Feed/FeedModule';
 import { MusicModule } from './Music/MusicModule';
 import { FavoriteGamesModule } from './FavoriteGames/FavoriteGamesModule';
 import { LiveModule } from './Live/LiveModule';
+import { BrowserModule } from './Browser/BrowserModule';
 
 /**
  * Mapeia os IDs de módulos para seus componentes reais.
@@ -27,4 +28,5 @@ export const ModuleRegistry: Record<string, React.ComponentType<any>> = {
   [ModuleId.Music]: MusicModule,
   [ModuleId.FavoriteGames]: FavoriteGamesModule,
   [ModuleId.Live]: LiveModule,
+  [ModuleId.Browser]: BrowserModule,
 };

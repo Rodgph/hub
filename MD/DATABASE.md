@@ -487,10 +487,20 @@ CREATE TABLE messages (
   media_types           text[] DEFAULT '{}',
   reply_to_id           uuid REFERENCES messages(id) ON DELETE SET NULL,
   sticker_id            text,                       -- ID da figurinha (NULL se não tem)
+  type                  text DEFAULT 'text' CHECK (type IN ('text','code','sync_media','drawing','voice')),
+  metadata              jsonb DEFAULT '{}',         -- Metadados: { language: 'js' } ou { media_id: 'uuid' }
+  
+  -- Funcionalidades Revolucionárias
   is_scheduled          boolean DEFAULT false,
-  scheduled_for         timestamptz,                -- Data/hora programada (NULL se não agendada)
+  scheduled_for         timestamptz,                -- Cápsula do tempo / Agendada
+  is_silent             boolean DEFAULT false,      -- Chega sem notificação
+  burn_after_read       boolean DEFAULT false,      -- View once / Autodestruição
+  unlock_at             timestamptz,                -- Só pode ser lida após X data/hora
+  unlock_location       jsonb,                      -- Só abre em certas coordenadas {lat, lng, radius}
+  private_content       text,                       -- Versão privada da mensagem (camadas)
   has_password          boolean DEFAULT false,
-  password_hash         text,                       -- bcrypt hash (NULL se sem senha)
+  password_hash         text,                       -- bcrypt hash
+  
   is_deleted_for_all    boolean DEFAULT false,
   deleted_for_users     uuid[] DEFAULT '{}',        -- IDs que deletaram só para si
   is_pinned             boolean DEFAULT false,
@@ -529,6 +539,27 @@ CREATE POLICY "messages_insert_members" ON messages
 
 CREATE POLICY "messages_update_own" ON messages
   FOR UPDATE USING (sender_id = auth.uid());
+```
+
+---
+
+### message_reminders
+
+```sql
+CREATE TABLE message_reminders (
+  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id         uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  message_id      uuid NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+  remind_at       timestamptz NOT NULL,
+  is_completed    boolean DEFAULT false,
+  created_at      timestamptz DEFAULT now() NOT NULL
+);
+
+ALTER TABLE message_reminders ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "reminders_own" ON message_reminders
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
 ```
 
 ---

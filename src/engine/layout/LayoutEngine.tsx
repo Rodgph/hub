@@ -45,7 +45,7 @@ export function LayoutEngine() {
             {node.moduleId === ModuleId.Empty ? (
                 <EmptyPane nodeId={node.id} />
             ) : RealComponent ? (
-                <RealComponent />
+                <RealComponent nodeId={node.id} />
             ) : (
                 <div style={{ 
                   width: '100%', 

@@ -26,8 +26,11 @@ export function GlobalSearch({ inputRef }: GlobalSearchProps) {
   };
 
   useEffect(() => {
-    setQuery('');
-  }, [setQuery]);
+    // Garante foco ao abrir
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
 
   return (
     <div className={styles.container}>
@@ -63,7 +66,27 @@ export function GlobalSearch({ inputRef }: GlobalSearchProps) {
               </div>
               
               {result.category === 'user' && (
-                <FollowButton targetUserId={result.id.replace('user-', '')} />
+                <div className={styles.userActions}>
+                  <FollowButton targetUserId={result.id.replace('user-', '')} />
+                  <button 
+                    className={styles.actionBtn} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      useSearchStore.getState().openDirectMessage(result.id.replace('user-', ''));
+                    }}
+                  >
+                    Mensagem
+                  </button>
+                  <button 
+                    className={styles.actionBtn} 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      useSearchStore.getState().openProfile(result.id.replace('user-', ''));
+                    }}
+                  >
+                    Perfil
+                  </button>
+                </div>
               )}
 
               <span className={styles.categoryBadge}>{result.category}</span>
